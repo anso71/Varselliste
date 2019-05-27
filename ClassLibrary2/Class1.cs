@@ -20,6 +20,7 @@ namespace Stange.Server
         {
             string client = ServerAPI.Current.Parameters["client"];
             string days = ServerAPI.Current.Parameters["dager"];
+            string lonnmail = ServerAPI.Current.Parameters["epost"];
      
             if (client == string.Empty)
                 Me.StopReport("Klient ikke fylt ut");
@@ -91,6 +92,8 @@ namespace Stange.Server
               
                 
             }
+            StringBuilder _alltext = new StringBuilder();
+
             foreach (var item in listtext)
             {
                 IStatement sqlemail = CurrentContext.Database.CreateStatement();
@@ -123,11 +126,25 @@ namespace Stange.Server
                 if (ServerAPI.Current.SendMail(_Emailtext.ToString(), pathname, "Varselliste.html", "Varselliste ansatte", email,""))
                 {
                     Me.API.WriteLog("Epost sendt til : {0}", email);
+                    _alltext.Append("<br/>####### START ##############################<br/>");
+                    _alltext.Append("Sendt til:<span/>");
+                    _alltext.Append(email);
+                    _alltext.Append(WebUtility.HtmlEncode("<br/>Med følgende text: <br/>"));
+                    _alltext.Append(WebUtility.HtmlEncode(_Emailtext.ToString()));
+                    _alltext.Append("<br/>");
+                    _alltext.Append(emailtext);
+                    _alltext.Append("<br/>####### SLUTT TEXT #####################################<br/>");
                 }
                 else
                 {
                     Me.API.WriteLog("Epost ikke sent til: {0}", email);
                 }
+            }
+            string allpathname = Path.Combine(Path.GetTempPath(), "AllText.html");
+            File.WriteAllText(allpathname, _alltext.ToString());
+            if (ServerAPI.Current.SendMail("Se vedlegg på hva som ble sendt av varsel", allpathname, "AllVarselliste.html","Varselliste samlet ansatte",lonnmail,""))
+            {
+                Me.API.WriteLog("Sendt samle mail");
             }
 
         }
