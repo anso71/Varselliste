@@ -140,11 +140,15 @@ namespace Stange.Server
                     Me.API.WriteLog("Epost ikke sent til: {0}", email);
                 }
             }
-            string allpathname = Path.Combine(Path.GetTempPath(), "AllText.html");
-            File.WriteAllText(allpathname, _alltext.ToString());
-            if (ServerAPI.Current.SendMail("Se vedlegg på hva som ble sendt av varsel", allpathname, "AllVarselliste.html","Varselliste samlet ansatte",lonnmail,""))
+            if (_alltext.ToString() != string.Empty)
             {
-                Me.API.WriteLog("Sendt samle mail");
+
+                string allpathname = Path.Combine(Path.GetTempPath(), "AllText.html");
+                File.WriteAllText(allpathname, _alltext.ToString());
+                if (ServerAPI.Current.SendMail("Se vedlegg på hva som ble sendt av varsel", allpathname, "AllVarselliste.html", "Varselliste samlet ansatte", lonnmail, ""))
+                {
+                    Me.API.WriteLog("Sendt samle mail");
+                }
             }
 
         }
