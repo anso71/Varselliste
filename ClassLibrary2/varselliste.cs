@@ -50,9 +50,10 @@ namespace Stange.Server
                 string name = "";
                 CurrentContext.Database.ReadValue(sql2, ref name);
                 IStatement sql3 = CurrentContext.Database.CreateStatement();
-                sql3.Append("select distinct a.rel_value, b.rel_value as AvdelingLeder from aprposrelvalue a, aglrelvalue b where a.client = @client  and a.rel_attr_id = 'MNAH' and a.resource_id = @resource_id and a.date_to > GETDATE() and a.rel_value = b.att_value and b.CLIENT= @client  and b.attribute_id  = 'MNAH' AND b.rel_attr_id = 'C0' group by a.rel_value, b.rel_value");
+                sql3.Append("select distinct a.rel_value, b.rel_value as AvdelingLeder from aprposrelvalue a, aglrelvalue b where a.client = @client and a.post_id = @stilling and a.rel_attr_id = 'MNAH' and a.resource_id = @resource_id and a.date_to > GETDATE() and a.rel_value = b.att_value and b.CLIENT= @client  and b.attribute_id  = 'MNAH' AND b.rel_attr_id = 'C0' group by a.rel_value, b.rel_value");
                 sql3["client"] = client;
                 sql3["resource_id"] = row["dim_value"];
+                sql3["stilling"] = row["stilling"];
                 DataTable managertable = new DataTable("manager");
                 CurrentContext.Database.Read(sql3, managertable);
                 foreach(DataRow row2 in managertable.Rows)
